@@ -3,24 +3,24 @@ cat > /etc/bind/named.conf.local << 'EOF'
 zone "k25.com" {
     type master;
     file "/etc/bind/zones/db.k25.com";
-    allow-transfer { 10.15.3.4; };
-    also-notify { 10.15.3.4; };
+    allow-transfer { 10.76.3.4; };
+    also-notify { 10.76.3.4; };
     notify yes;
 };
 
-zone "3.15.10.in-addr.arpa" {
+zone "3.76.10.in-addr.arpa" {
     type master;
-    file "/etc/bind/zones/db.10.15.3";
-    allow-transfer { 10.15.3.4; };
-    also-notify { 10.15.3.4; };
+    file "/etc/bind/zones/db.10.76.3";
+    allow-transfer { 10.76.3.4; };
+    also-notify { 10.76.3.4; };
     notify yes;
 };
 EOF
 
 # Node Tirion
-cat > /etc/bind/zones/db.10.15.3 << 'EOF'
+cat > /etc/bind/zones/db.10.76.3 << 'EOF'
 ;
-; BIND reverse data file for 10.15.3.0/24
+; BIND reverse data file for 10.76.3.0/24
 ;
 $TTL    604800
 @       IN      SOA     ns1.k25.com. admin.k25.com. (
@@ -43,7 +43,7 @@ $TTL    604800
 EOF
 
 # Node Tirion
-named-checkzone 3.15.10.in-addr.arpa /etc/bind/zones/db.10.15.3
+named-checkzone 3.76.10.in-addr.arpa /etc/bind/zones/db.10.76.3
 service named restart
 
 # Node Valmar
@@ -51,13 +51,13 @@ cat > /etc/bind/named.conf.local << 'EOF'
 zone "k25.com" {
     type slave;
     file "db.k25.com";
-    masters { 10.15.3.3; };
+    masters { 10.76.3.3; };
 };
 
-zone "3.15.10.in-addr.arpa" {
+zone "3.76.10.in-addr.arpa" {
     type slave;
-    file "db.10.15.3";
-    masters { 10.15.3.3; };
+    file "db.10.76.3";
+    masters { 10.76.3.3; };
 };
 EOF
 
@@ -65,6 +65,6 @@ EOF
 service named restart
 
 # Test Node manapun
-dig -x 10.15.3.2
-dig -x 10.15.3.5
-dig -x 10.15.3.6
+dig -x 10.76.3.2
+dig -x 10.76.3.5
+dig -x 10.76.3.6

@@ -60,22 +60,22 @@ $TTL    604800
 @       IN      NS      ns2.k25.com.
 
 ; A Records for Name Servers
-ns1.k25.com.        IN      A       10.15.3.3
-ns2.k25.com.        IN      A       10.15.3.4
+ns1.k25.com.        IN      A       10.76.3.3
+ns2.k25.com.        IN      A       10.76.3.4
 
 ; A Record for apex
-@                   IN      A       10.15.3.2
+@                   IN      A       10.76.3.2
 
 ; A Records for all nodes
-eonwe.k25.com.      IN      A       10.15.1.1
-earendil.k25.com.   IN      A       10.15.1.2
-elwing.k25.com.     IN      A       10.15.1.3
-cirdan.k25.com.     IN      A       10.15.2.2
-elrond.k25.com.     IN      A       10.15.2.3
-maglor.k25.com.     IN      A       10.15.2.4
-sirion.k25.com.     IN      A       10.15.3.2
-lindon.k25.com.     IN      A       10.15.3.5
-vingilot.k25.com.   IN      A       10.15.3.6
+eonwe.k25.com.      IN      A       10.76.1.1
+earendil.k25.com.   IN      A       10.76.1.2
+elwing.k25.com.     IN      A       10.76.1.3
+cirdan.k25.com.     IN      A       10.76.2.2
+elrond.k25.com.     IN      A       10.76.2.3
+maglor.k25.com.     IN      A       10.76.2.4
+sirion.k25.com.     IN      A       10.76.3.2
+lindon.k25.com.     IN      A       10.76.3.5
+vingilot.k25.com.   IN      A       10.76.3.6
 EOF
 
 # Node Tirion 
