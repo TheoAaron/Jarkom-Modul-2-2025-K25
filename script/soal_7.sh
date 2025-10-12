@@ -41,7 +41,7 @@ EOF
 
 # Node Tirion
 named-checkzone k25.com /etc/bind/zones/db.k25.com
-systemctl restart bind9
+service named restart
 
 # Testing dari 2 Node berbeda (Earendil dan Cirdan)
 # Node Earendil

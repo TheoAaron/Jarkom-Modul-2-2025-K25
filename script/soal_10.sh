@@ -116,8 +116,8 @@ EOF
 # Node Vingilot
 chown -R www-data:www-data /var/www/app
 nginx -t
-systemctl restart nginx
-systemctl restart php8.4-fpm
+service nginx restart
+service php8.4-fpm restart
 
 # Test dari Node manapun
 curl http://app.k25.com

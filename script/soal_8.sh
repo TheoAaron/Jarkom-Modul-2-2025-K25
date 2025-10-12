@@ -44,7 +44,7 @@ EOF
 
 # Node Tirion
 named-checkzone 3.15.10.in-addr.arpa /etc/bind/zones/db.10.15.3
-systemctl restart bind9
+service named restart
 
 # Node Valmar
 cat > /etc/bind/named.conf.local << 'EOF'
@@ -62,7 +62,7 @@ zone "3.15.10.in-addr.arpa" {
 EOF
 
 # Node Valmar
-systemctl restart bind9
+service named restart
 
 # Test Node manapun
 dig -x 10.15.3.2

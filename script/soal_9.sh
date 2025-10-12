@@ -36,7 +36,7 @@ echo "Archive 2: The Ships of Cirdan" > /var/www/static/annals/archive2.txt
 echo "Archive 3: The Grey Havens" > /var/www/static/annals/archive3.txt
 
 nginx -t
-systemctl restart nginx
+service nginx restart
 
 # Test dari Node manapun
 curl http://static.k25.com

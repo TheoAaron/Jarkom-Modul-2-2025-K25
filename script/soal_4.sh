@@ -62,7 +62,7 @@ EOF
 chown -R bind:bind /etc/bind/zones
 named-checkconf
 named-checkzone k25.com /etc/bind/zones/db.k25.com
-systemctl restart bind9
+service named restart
 
 # Node Valmar
 apt-get update
@@ -93,7 +93,7 @@ EOF
 
 # Node Valmar
 named-checkconf
-systemctl restart bind9
+service named restart
 
 # Semua Node Kecuali Eonwa
 echo "nameserver 10.15.3.3" > /etc/resolv.conf
