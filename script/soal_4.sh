@@ -86,10 +86,11 @@ EOF
 cat > /etc/bind/named.conf.local << 'EOF'
 zone "k25.com" {
     type slave;
-    file "db.k25.com";
+    file "/etc/bind/zones/db.k25.com";
     masters { 10.15.3.3; };
 };
 EOF
+
 
 # Node Valmar
 named-checkconf
