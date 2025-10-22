@@ -69,6 +69,7 @@ EOF
 nginx -t
 service nginx reload
 
+# Semua test dapat dilakukan di node manapun
 # Test 1: Akses via IP (harus redirect 301 ke www.k25.com)
 curl -I http://10.76.3.2/
 

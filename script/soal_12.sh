@@ -151,7 +151,8 @@ chown -R www-data:www-data /var/www/sirion
 nginx -t
 service nginx reload
 
-# Test 1: Tanpa kredensial (harus 401)
+# Semua Test bebas dilakukan di node manapun
+# Test 1: Tanpa kredensial (harus 401) 
 curl http://www.k25.com/admin/
 
 # Test 2: Dengan kredensial salah (harus 401)

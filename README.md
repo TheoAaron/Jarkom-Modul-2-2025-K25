@@ -5,6 +5,296 @@
 
 # Laporan Praktikum Jaringan Komputer - Modul 2
 
+## Soal 1: IP Addressing dan Interface
+
+### Tujuan
+Menetapkan skema alamat IP untuk semua node dan menyetel nameserver default.
+
+### Solusi / Langkah
+File: `script/soal_1.sh` — konfigurasi `/etc/network/interfaces` (repr sentral dalam skrip):
+
+```bash
+# Contoh (potongan dari skrip)
+auto eth1
+iface eth1 inet static
+    address 10.76.1.1
+    netmask 255.255.255.0
+
+# ... dan seterusnya untuk subnet 10.76.1.0/24, 10.76.2.0/24, 10.76.3.0/24
+
+# Nameserver lokal/testing
+echo "nameserver 192.168.122.1" > /etc/resolv.conf
+```
+
+### Perintah penting
+- Konfigurasi interface: tulis file konfigurasi yang sesuai pada masing-masing node (atau gunakan `ip addr add ...` untuk testing sementara).
+
+### Hasil yang diharapkan
+- Node-router dan klien mempunyai alamat sesuai daftar (mis. Eonwe 10.76.1.1, Earendil 10.76.1.2, Cirdan 10.76.2.2, Sirion 10.76.3.2, Tirion 10.76.3.1, dsb).
+
+### Verifikasi
+- `ip addr show` pada masing-masing node
+- `cat /etc/resolv.conf`
+
+---
+
+## Soal 2: Konfigurasi NAT dan IP Forwarding
+
+### Tujuan
+Mengizinkan host di jaringan internal mengakses internet melalui NAT pada gateway.
+
+### Solusi / Langkah
+File: `script/soal_2.sh`:
+
+```bash
+echo 1 > /proc/sys/net/ipv4/ip_forward
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE -s 10.76.0.0/16
+```
+
+### Perintah penting
+- Aktifkan IP forwarding
+- Atur rule MASQUERADE untuk subnet 10.76.0.0/16
+
+### Hasil yang diharapkan
+- Host internal dapat melakukan ping/curl ke alamat internet normal (mis. google.com)
+
+### Verifikasi
+- `sysctl net.ipv4.ip_forward` atau `cat /proc/sys/net/ipv4/ip_forward`
+- `iptables -t nat -S` atau `iptables-save | grep MASQUERADE`
+- `ping google.com -c 2` dari klien
+
+---
+
+## Soal 3: Aturan Forwarding IPTables & Pengujian Konektivitas
+
+### Tujuan
+Mengizinkan forwarding trafik antar interface internal sesuai topologi.
+
+### Solusi / Langkah
+File: `script/soal_3.sh` — menambahkan rule FORWARD untuk mengizinkan trafik antar subnet:
+
+```bash
+iptables -A FORWARD -i eth1 -o eth2 -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth1 -j ACCEPT
+iptables -A FORWARD -i eth1 -o eth3 -j ACCEPT
+iptables -A FORWARD -i eth3 -o eth1 -j ACCEPT
+iptables -A FORWARD -i eth2 -o eth3 -j ACCEPT
+iptables -A FORWARD -i eth3 -o eth2 -j ACCEPT
+
+# Pengujian konektivitas
+ping 10.76.2.2  # ping Cirdan (klien Timur)
+ping 10.76.3.2  # ping Sirion (DMZ)
+```
+
+### Hasil yang diharapkan
+- Paket antar subnet diteruskan oleh router; ping antar node berhasil.
+
+### Verifikasi
+- `iptables -L FORWARD -n -v`
+- `ping` hasil dari beberapa node
+
+---
+
+## Soal 4: Setup DNS (Master Tirion dan Slave Valmar)
+
+### Tujuan
+Men-setup server DNS master (Tirion) dan slave (Valmar) untuk zona `k25.com`.
+
+### Solusi / Langkah
+File: `script/soal_4.sh` — instalasi BIND9, konfigurasi `named.conf.options`, `named.conf.local` dan file zona master:
+
+```bash
+# Tirion (master)
+cat > /etc/bind/named.conf.options << 'EOF'
+options {
+    directory "/var/cache/bind";
+    forwarders { 192.168.122.1; };
+    allow-transfer { 10.76.3.4; };
+    listen-on { any; };
+};
+EOF
+
+cat > /etc/bind/named.conf.local << 'EOF'
+zone "k25.com" {
+    type master;
+    file "/etc/bind/zones/db.k25.com";
+    allow-transfer { 10.76.3.4; };
+    also-notify { 10.76.3.4; };
+};
+EOF
+
+# Contoh record di db.k25.com: ns1=10.76.3.3, ns2=10.76.3.4, apex=10.76.3.2
+```
+
+### Perintah penting
+- `named-checkconf` dan `named-checkzone k25.com /etc/bind/zones/db.k25.com`
+- Restart service `service named restart`
+
+### Hasil yang diharapkan
+- Tirion menjadi authoritative untuk `k25.com` dan Valmar sinkron sebagai slave.
+
+### Verifikasi
+- `dig @10.76.3.3 k25.com SOA`
+- `dig ns1.k25.com`, `dig ns2.k25.com` dari klien
+
+---
+
+## Soal 5: Hostname & Update Zona DNS
+
+### Tujuan
+Menetapkan hostname pada tiap node dan memperbarui zone file `db.k25.com` dengan semua host.
+
+### Solusi / Langkah
+File: `script/soal_5.sh` — set `hostname` pada setiap node dan update zone file:
+
+```bash
+echo "eonwe" > /etc/hostname; hostname -F /etc/hostname
+... (berulang untuk earendil, elwing, cirdan, dst)
+
+# Update db.k25.com untuk menambahkan A record semua node
+```
+
+### Hasil yang diharapkan
+- Semua nama host dapat di-resolve melalui DNS internal (ns1/ns2).
+
+### Verifikasi
+- `hostname` pada tiap node
+- `dig earendil.k25.com`, `dig sirion.k25.com`
+
+---
+
+## Soal 6: Validasi Zona & Force Transfer
+
+### Tujuan
+Memvalidasi file zona dan memastikan file tersimpan di cache bind; memaksa transfer (retransfer) di slave.
+
+### Solusi / Langkah
+File: `script/soal_6.sh` — cek SOA, lihat cache, lakukan `rndc retransfer` jika perlu:
+
+```bash
+dig @10.76.3.3 k25.com SOA
+dig @10.76.3.4 k25.com SOA
+ls -la /var/cache/bind/
+cat /var/cache/bind/db.k25.com
+rndc retransfer k25.com
+```
+
+### Hasil yang diharapkan
+- Serial di ns1 dan ns2 sama; zone file ada di cache slave.
+
+### Verifikasi
+- `dig k25.com SOA` dari master dan slave
+- isi `/var/cache/bind/db.k25.com`
+
+---
+
+## Soal 7: Menambahkan CNAME untuk Layanan
+
+### Tujuan
+Menambah CNAME records untuk layanan `www.k25.com`, `static.k25.com`, `app.k25.com` yang menunjuk ke host backend.
+
+### Solusi / Langkah
+File: `script/soal_7.sh` — update zone file di Tirion dan restart named:
+
+```bash
+# Tambahan di db.k25.com
+www.k25.com.        IN      CNAME   sirion.k25.com.
+static.k25.com.     IN      CNAME   lindon.k25.com.
+app.k25.com.        IN      CNAME   vingilot.k25.com.
+```
+
+### Hasil yang diharapkan
+- `www`, `static`, `app` resolve ke host backend masing-masing.
+
+### Verifikasi
+- `dig www.k25.com`, `dig static.k25.com`, `dig app.k25.com`
+
+---
+
+## Soal 8: Reverse DNS (PTR) untuk 10.76.3.0/24
+
+### Tujuan
+Membuat zone reverse PTR untuk subnet DMZ (10.76.3.0/24) sehingga IP dapat direverse-resolve ke nama host.
+
+### Solusi / Langkah
+File: `script/soal_8.sh` — konfigurasi `named.conf.local` untuk zone `3.76.10.in-addr.arpa` dan file `db.10.76.3`:
+
+```bash
+zone "3.76.10.in-addr.arpa" {
+    type master;
+    file "/etc/bind/zones/db.10.76.3";
+    allow-transfer { 10.76.3.4 };
+};
+
+# PTRs: 2 -> sirion.k25.com., 3 -> ns1.k25.com., 4 -> ns2.k25.com., etc.
+```
+
+### Hasil yang diharapkan
+- `dig -x 10.76.3.2` mengembalikan `sirion.k25.com.` dan PTR lainnya sesuai file.
+
+### Verifikasi
+- `dig -x 10.76.3.2`, `dig -x 10.76.3.5` dll.
+
+---
+
+## Soal 9: Web Static - Nginx di Lindon
+
+### Tujuan
+Menyajikan konten statis (arsip) pada host Lindon dengan Nginx.
+
+### Solusi / Langkah
+File: `script/soal_9.sh` — install nginx, konfigurasi site `static.k25.com`, buat konten di `/var/www/static`:
+
+```bash
+apt-get update; apt-get install -y nginx
+cat > /etc/nginx/sites-available/static.k25.com << 'EOF'
+server { listen 80; server_name static.k25.com lindon.k25.com; root /var/www/static; }
+EOF
+ln -sf /etc/nginx/sites-available/static.k25.com /etc/nginx/sites-enabled/
+mkdir -p /var/www/static/annals
+echo "<h1>Welcome to Lindon - Static Archives</h1>" > /var/www/static/index.html
+nginx -t && service nginx restart
+```
+
+### Hasil yang diharapkan
+- `curl http://static.k25.com` menampilkan halaman index; `/annals/` menunjukkan file-file arsip.
+
+### Verifikasi
+- `nginx -t` output
+- `curl http://static.k25.com`
+- `ls -la /var/www/static/annals`
+
+---
+
+## Soal 10: Web Dinamis - Nginx + PHP-FPM di Vingilot
+
+### Tujuan
+Men-deploy aplikasi PHP sederhana di Vingilot dan melayani lewat Nginx + PHP-FPM.
+
+### Solusi / Langkah
+File: `script/soal_10.sh` — install nginx, php8.4-fpm, buat situs `app.k25.com`, buat `index.php` dan `about.php`:
+
+```bash
+apt-get update; apt-get install -y nginx php8.4-fpm
+cat > /etc/nginx/sites-available/app.k25.com << 'EOF'
+server { listen 80; server_name app.k25.com vingilot.k25.com; root /var/www/app; index index.php; }
+EOF
+mkdir -p /var/www/app
+cat > /var/www/app/index.php << 'EOF'
+<?php echo "Welcome to Vingilot"; ?>
+EOF
+nginx -t && service nginx restart && service php8.4-fpm restart
+```
+
+### Hasil yang diharapkan
+- `curl http://app.k25.com` menampilkan konten PHP; `/about` menampilkan halaman PHP tentang aplikasi.
+
+### Verifikasi
+- `nginx -t` dan `service php8.4-fpm status`
+- `curl http://app.k25.com` dan `curl http://app.k25.com/about`
+
+---
+
 ## Soal 11: Reverse Proxy dengan Path-Based Routing
 
 ### Solusi
