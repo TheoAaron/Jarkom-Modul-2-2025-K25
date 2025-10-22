@@ -306,9 +306,6 @@ apt-get update
 apt-get install -y nginx
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot hasil instalasi nginx yang berhasil
-
 #### Langkah 2: Konfigurasi Reverse Proxy
 ```bash
 # Node Sirion - Konfigurasi Reverse Proxy
@@ -438,10 +435,6 @@ service nginx restart
 service nginx status
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot output `nginx -t` yang menunjukkan konfigurasi valid
-- Screenshot status nginx yang running
-
 ### Testing dan Verifikasi
 
 #### Test 1: Akses Root Sirion
@@ -452,19 +445,12 @@ curl http://www.k25.com
 curl http://sirion.k25.com
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot hasil curl menampilkan halaman welcome Sirion
-
 #### Test 2: Routing ke Lindon (Static)
 ```bash
 # Test routing ke Lindon (static)
 curl http://www.k25.com/static
 curl http://www.k25.com/static/annals/
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot hasil curl yang menampilkan konten dari Lindon
-- Screenshot directory listing dari `/static/annals/`
 
 #### Test 3: Routing ke Vingilot (App)
 ```bash
@@ -473,10 +459,6 @@ curl http://www.k25.com/app
 curl http://www.k25.com/app/about
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot hasil curl yang menampilkan halaman PHP dari Vingilot
-- Screenshot halaman about dari Vingilot
-
 #### Test 4: Verifikasi Header Forwarding
 ```bash
 # Verifikasi header diteruskan dengan benar
@@ -484,8 +466,6 @@ curl -v http://www.k25.com/static 2>&1 | grep -i "host\|x-real-ip"
 curl -v http://www.k25.com/app 2>&1 | grep -i "host\|x-real-ip"
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot output curl verbose yang menunjukkan header diteruskan
 
 ## Soal 12: Basic Authentication untuk Path /admin 
 
@@ -497,9 +477,6 @@ curl -v http://www.k25.com/app 2>&1 | grep -i "host\|x-real-ip"
 apt-get update
 apt-get install -y apache2-utils
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot instalasi apache2-utils berhasil
 
 #### Langkah 2: Buat Password File
 ```bash
@@ -517,10 +494,6 @@ chown www-data:www-data /etc/nginx/.htpasswd
 - Username: `admin`
 - Password: `admin123`
 - File disimpan di `/etc/nginx/.htpasswd`
-
-**Screenshot yang dibutuhkan:**
-- Screenshot pembuatan password file berhasil
-- Screenshot isi file `.htpasswd` (cat /etc/nginx/.htpasswd)
 
 #### Langkah 3: Update Konfigurasi Nginx dengan Basic Auth
 ```bash
@@ -683,10 +656,6 @@ nginx -t
 service nginx reload
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot nginx -t menunjukkan konfigurasi valid
-- Screenshot nginx reload berhasil
-
 ### Testing dan Verifikasi
 
 #### Test 1: Akses Tanpa Kredensial (Harus Ditolak - 401)
@@ -706,17 +675,11 @@ curl http://www.k25.com/admin/
 </html>
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot curl tanpa kredensial menampilkan error 401
-
 #### Test 2: Akses dengan Kredensial Salah (Harus Ditolak - 401)
 ```bash
 # Test dengan kredensial salah (harus 401)
 curl -u admin:wrongpass http://www.k25.com/admin/
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot curl dengan password salah menampilkan error 401
 
 #### Test 3: Akses dengan Kredensial Benar (Harus Berhasil - 200 OK)
 ```bash
@@ -727,11 +690,6 @@ curl -u admin:admin123 http://www.k25.com/admin/
 **Expected Output:**
 Halaman HTML admin panel lengkap.
 
-**Screenshot yang dibutuhkan:**
-- Screenshot curl dengan kredensial benar menampilkan halaman admin
-- Screenshot browser menampilkan prompt login Basic Auth
-- Screenshot halaman admin setelah login berhasil
-
 #### Test 4: Path Lain Tidak Terproteksi
 ```bash
 # Test path lain tidak terproteksi
@@ -739,9 +697,6 @@ curl http://www.k25.com/
 curl http://www.k25.com/static
 curl http://www.k25.com/app
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot akses ke path lain tanpa autentikasi berhasil
 
 ## Soal 13: Kanonisasi Hostname dengan Redirect 301
 
@@ -834,10 +789,6 @@ nginx -t
 service nginx reload
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot nginx -t berhasil
-- Screenshot nginx reload
-
 ### Testing dan Verifikasi
 
 #### Test 1: Akses via IP Address
@@ -853,10 +804,6 @@ Server: nginx
 Location: http://www.k25.com/
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot curl -I dari IP menunjukkan redirect 301
-- Screenshot header Location mengarah ke www.k25.com
-
 #### Test 2: Akses via sirion.k25.com
 ```bash
 # Harus redirect 301 ke www.k25.com
@@ -870,9 +817,6 @@ Server: nginx
 Location: http://www.k25.com/
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot curl -I dari sirion.k25.com menunjukkan redirect 301
-
 #### Test 3: Akses via www.k25.com
 ```bash
 # Langsung OK tanpa redirect
@@ -885,9 +829,6 @@ HTTP/1.1 200 OK
 Server: nginx
 Content-Type: text/html
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot curl -I dari www.k25.com menunjukkan 200 OK (tanpa redirect)
 
 #### Test 4: Redirect dengan Path
 ```bash
@@ -904,9 +845,6 @@ Location: http://www.k25.com/static
 HTTP/1.1 301 Moved Permanently
 Location: http://www.k25.com/app
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot redirect dengan path mempertahankan URI asli
 
 ## Soal 14: Logging IP Klien Asli di Vingilot
 
@@ -984,10 +922,6 @@ nginx -t
 service nginx restart
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot nginx -t berhasil
-- Screenshot nginx restart
-
 #### Buat File PHP untuk Testing
 ```bash
 # Buat file PHP untuk menampilkan IP address
@@ -1047,9 +981,6 @@ curl http://vingilot.k25.com/checkip
 
 **Expected:** Menampilkan IP Earendil: `10.76.1.2`
 
-**Screenshot yang dibutuhkan:**
-- Screenshot curl menampilkan IP klien yang benar (10.76.1.2)
-
 #### Test 2: Akses via Sirion (Reverse Proxy)
 ```bash
 # Node Earendil
@@ -1057,10 +988,6 @@ curl http://www.k25.com/app/checkip
 ```
 
 **Expected:** Menampilkan IP Earendil: `10.76.1.2` (bukan IP Sirion 10.76.3.2)
-
-**Screenshot yang dibutuhkan:**
-- Screenshot curl menampilkan IP asli klien (10.76.1.2), bukan IP Sirion
-- Screenshot header X-Real-IP terisi dengan benar
 
 #### Test 3: Cek Access Log
 ```bash
@@ -1085,8 +1012,6 @@ curl http://www.k25.com/app/checkip
 
 **Expected:** Menampilkan IP Cirdan: `10.76.2.2`
 
-**Screenshot yang dibutuhkan:**
-- Screenshot akses dari klien berbeda (Cirdan) menampilkan IP yang benar
 
 ## Soal 15: Load Testing dengan ApacheBench
 
@@ -1098,9 +1023,6 @@ curl http://www.k25.com/app/checkip
 apt-get update
 apt-get install -y apache2-utils
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot instalasi apache2-utils berhasil
 
 #### Langkah 2: Benchmark Endpoint /app/
 ```bash
@@ -1127,10 +1049,6 @@ echo "Testing http://www.k25.com/static/"
 echo "=========================================="
 ab -n 500 -c 10 http://www.k25.com/static/
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot output lengkap benchmark /static/
-- Screenshot fokus pada metrics penting
 
 #### Langkah 4: Simpan Hasil ke File
 ```bash
@@ -1185,9 +1103,6 @@ chmod +x /root/parse_benchmark.sh
 /root/parse_benchmark.sh
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot output tabel hasil benchmark yang sudah di-parse
-
 ### Hasil Benchmark (Contoh)
 
 **Tabel Ringkasan Hasil:**
@@ -1220,10 +1135,6 @@ chmod +x /root/parse_benchmark.sh
    - Tidak ada failed requests (0 failures)
    - Sistem stabil menangani load
 
-**Screenshot yang dibutuhkan:**
-- Screenshot tabel perbandingan lengkap
-- Screenshot grafik (opsional jika ada tools visualisasi)
-
 ## Soal 16: DNS Record Migration dengan TTL
 
 ### Solusi
@@ -1244,9 +1155,6 @@ lindon.k25.com.
 10.76.3.5
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot query sebelum perubahan menunjukkan IP lama (10.76.3.5)
-
 #### Langkah 2: Ubah IP Lindon
 ```bash
 # Node Lindon - Ubah IP dari 10.76.3.5 ke 10.76.3.15
@@ -1261,9 +1169,6 @@ iface eth0 inet static
     up echo nameserver 192.168.122.1 >> /etc/resolv.conf
 EOF
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot konfigurasi interface baru di Lindon
 
 #### Langkah 3: Update Zone File dengan TTL 30 Detik
 ```bash
@@ -1314,8 +1219,6 @@ EOF
 - **lindon.k25.com TTL 30**: IP diubah dari 10.76.3.5 ke 10.76.3.15 dengan TTL 30 detik
 - **static.k25.com TTL 30**: CNAME juga diberi TTL 30 detik agar propagasi cepat
 
-**Screenshot yang dibutuhkan:**
-- Screenshot zone file yang sudah diupdate
 
 #### Langkah 4: Validasi dan Restart BIND9
 ```bash
@@ -1331,10 +1234,6 @@ else
 fi
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot named-checkzone berhasil
-- Screenshot service restart
-
 #### Langkah 5: Verifikasi Sinkronisasi ke Valmar
 ```bash
 echo ""
@@ -1349,9 +1248,6 @@ dig @10.76.3.4 k25.com SOA +short | awk '{print $3}'
 ```
 
 **Expected:** Kedua nameserver menunjukkan serial yang sama: `2025101104`
-
-**Screenshot yang dibutuhkan:**
-- Screenshot SOA serial di ns1 dan ns2 sama
 
 ### Testing 3 Momen (Propagasi DNS)
 
@@ -1369,9 +1265,6 @@ lindon.k25.com.
 10.76.3.5
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot query menunjukkan IP lama (10.76.3.5)
-
 #### Momen 2: Sesaat Setelah Perubahan (Cache Belum Expire)
 ```bash
 # Testing dari Node Earendil - 15 detik setelah perubahan
@@ -1388,10 +1281,6 @@ lindon.k25.com.
 10.76.3.5
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot query masih menunjukkan IP lama (masih di-cache)
-- Screenshot timestamp untuk bukti waktu
-
 #### Momen 3: Setelah TTL Expire (Alamat Baru)
 ```bash
 # Testing dari Node Earendil - Setelah 30 detik (TTL expired)
@@ -1407,10 +1296,6 @@ dig +short static.k25.com
 lindon.k25.com.
 10.76.3.15
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot query menunjukkan IP baru (10.76.3.15)
-- Screenshot timestamp untuk bukti waktu setelah TTL expire
 
 #### Visualisasi Timeline:
 ```
@@ -1434,10 +1319,6 @@ dig static.k25.com
 # lindon.k25.com. 30 IN A 10.76.3.15
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot full dig output menunjukkan CNAME chain
-- Screenshot TTL countdown
-
 ## Soal 17: Service Autostart Configuration
 
 ### Solusi
@@ -1459,10 +1340,6 @@ update-rc.d autostart-tirion defaults
 - `/usr/sbin/named -u bind`: Start BIND9 daemon sebagai user bind
 - `update-rc.d`: Register script ke runlevel startup
 
-**Screenshot yang dibutuhkan:**
-- Screenshot pembuatan script autostart
-- Screenshot update-rc.d berhasil
-
 #### Node Valmar (ns2) - Autostart BIND9
 ```bash
 # VALMAR
@@ -1474,9 +1351,6 @@ EOF
 chmod +x /etc/init.d/autostart-valmar
 update-rc.d autostart-valmar defaults
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot konfigurasi autostart Valmar
 
 #### Node Sirion - Autostart Nginx
 ```bash
@@ -1490,9 +1364,6 @@ chmod +x /etc/init.d/autostart-sirion
 update-rc.d autostart-sirion defaults
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot konfigurasi autostart Sirion
-
 #### Node Lindon - Autostart Nginx
 ```bash
 # LINDON
@@ -1504,9 +1375,6 @@ EOF
 chmod +x /etc/init.d/autostart-lindon
 update-rc.d autostart-lindon defaults
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot konfigurasi autostart Lindon
 
 #### Node Vingilot - Autostart PHP-FPM dan Nginx
 ```bash
@@ -1525,9 +1393,6 @@ update-rc.d autostart-vingilot defaults
 - Vingilot memerlukan 2 service: PHP-FPM (untuk dynamic content) dan Nginx (web server)
 - PHP-FPM harus start sebelum Nginx
 
-**Screenshot yang dibutuhkan:**
-- Screenshot konfigurasi autostart Vingilot
-
 ### Testing Autostart
 
 #### Metode 1: Reboot Simulation (Tanpa Benar-benar Reboot)
@@ -1544,10 +1409,6 @@ service php8.4-fpm stop # di Vingilot
 /etc/init.d/autostart-lindon
 /etc/init.d/autostart-vingilot
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot service stopped
-- Screenshot script autostart dijalankan
 
 #### Metode 2: Verifikasi Service Running
 ```bash
@@ -1574,11 +1435,6 @@ sirion.k25.com.
 <!DOCTYPE html>...Vingilot...
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot dig queries berhasil (DNS working)
-- Screenshot curl static berhasil (Nginx di Lindon working)
-- Screenshot curl app berhasil (PHP-FPM & Nginx di Vingilot working)
-
 #### Metode 3: Check Service Status
 ```bash
 # Node Tirion
@@ -1592,9 +1448,6 @@ ps aux | grep php-fpm
 ps aux | grep nginx
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot process list menunjukkan service running
-
 ### Verifikasi Lengkap Semua Service
 
 #### Test DNS (Tirion & Valmar)
@@ -1604,18 +1457,11 @@ dig @10.76.3.3 k25.com  # ns1 (Tirion)
 dig @10.76.3.4 k25.com  # ns2 (Valmar)
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot query ke ns1 berhasil
-- Screenshot query ke ns2 berhasil
-
 #### Test Web Static (Lindon)
 ```bash
 curl -I http://static.k25.com
 curl http://static.k25.com/annals/
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot HTTP response dari Lindon
 
 #### Test Web Dynamic (Vingilot)
 ```bash
@@ -1623,19 +1469,12 @@ curl -I http://app.k25.com
 curl http://app.k25.com/about
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot HTTP response dari Vingilot
-- Screenshot PHP content rendered
-
 #### Test Reverse Proxy (Sirion)
 ```bash
 curl -I http://www.k25.com
 curl -I http://www.k25.com/static
 curl -I http://www.k25.com/app
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot routing ke backend bekerja
 
 ### Alternative: Systemd Service (Modern Approach)
 Jika menggunakan systemd (lebih modern), bisa gunakan:
@@ -1699,18 +1538,12 @@ EOF
 - **TXT Record**: `melkor.k25.com` berisi text "Morgoth (Melkor)"
 - **CNAME**: `morgoth.k25.com` adalah alias ke `melkor.k25.com`
 
-**Screenshot yang dibutuhkan:**
-- Screenshot zone file dengan TXT dan CNAME baru
-
 #### Validasi dan Restart BIND9
 ```bash
 # Node Tirion
 named-checkzone k25.com /etc/bind/zones/db.k25.com
 service named restart
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot named-checkzone berhasil
 
 #### Sinkronisasi ke Valmar
 ```bash
@@ -1734,9 +1567,6 @@ dig melkor.k25.com TXT +short
 "Morgoth (Melkor)"
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot dig TXT mengembalikan text "Morgoth (Melkor)"
-
 #### Test 2: Query TXT via CNAME (morgoth.k25.com)
 ```bash
 dig morgoth.k25.com TXT +short
@@ -1749,9 +1579,6 @@ dig morgoth.k25.com TXT +short
 
 **Penjelasan:** Query TXT ke morgoth akan follow CNAME ke melkor, lalu return TXT record
 
-**Screenshot yang dibutuhkan:**
-- Screenshot query TXT via CNAME berhasil
-
 #### Test 3: Query CNAME Record
 ```bash
 dig morgoth.k25.com CNAME +short
@@ -1761,9 +1588,6 @@ dig morgoth.k25.com CNAME +short
 ```
 melkor.k25.com.
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot CNAME resolution
 
 #### Test 4: Full Query (Tanpa +short)
 ```bash
@@ -1782,9 +1606,6 @@ melkor.k25.com.         604800  IN      TXT     "Morgoth (Melkor)"
 - Baris pertama: CNAME record menunjukkan morgoth → melkor
 - Baris kedua: TXT record dari melkor berisi "Morgoth (Melkor)"
 - Query TXT mengikuti CNAME chain secara otomatis
-
-**Screenshot yang dibutuhkan:**
-- Screenshot full dig output menunjukkan CNAME chain dan TXT record
 
 #### Test 5: Query dari Nameserver Berbeda
 ```bash
@@ -1847,9 +1668,6 @@ EOF
 - **havens.k25.com**: CNAME yang mengarah ke www.k25.com
 - **CNAME Chain**: havens → www → sirion → 10.76.3.2
 
-**Screenshot yang dibutuhkan:**
-- Screenshot zone file dengan CNAME baru
-
 #### Langkah 2: Validasi dan Restart
 ```bash
 # Node Tirion
@@ -1857,17 +1675,11 @@ named-checkzone k25.com /etc/bind/zones/db.k25.com
 service named restart
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot named-checkzone berhasil
-
 #### Langkah 3: Sinkronisasi ke Valmar
 ```bash
 # Node Valmar - Force sync
 rndc retransfer k25.com
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot zone transfer berhasil
 
 #### Langkah 4: Update Nginx di Sirion (PENTING!)
 ```bash
@@ -1941,9 +1753,6 @@ nginx -t && service nginx reload
 - **server_name** ditambahkan `havens.k25.com` agar Nginx accept request dari hostname tersebut
 - Tanpa ini, Nginx akan return default server atau 404
 
-**Screenshot yang dibutuhkan:**
-- Screenshot nginx -t berhasil
-- Screenshot nginx reload
 
 ### Testing dan Verifikasi
 
@@ -1965,9 +1774,6 @@ sirion.k25.com.
 - www.k25.com → sirion.k25.com (CNAME)
 - sirion.k25.com → 10.76.3.2 (A record)
 
-**Screenshot yang dibutuhkan:**
-- Screenshot dig menunjukkan CNAME chain lengkap
-
 #### Test 2: Akses dari Klien Pertama (Earendil)
 ```bash
 # Node Earendil (IP: 10.76.1.2)
@@ -1985,10 +1791,6 @@ curl http://havens.k25.com/app | head -10
 
 **Expected:** Semua endpoint dapat diakses dan return content yang benar
 
-**Screenshot yang dibutuhkan:**
-- Screenshot curl homepage dari Earendil
-- Screenshot curl /static berhasil
-- Screenshot curl /app berhasil
 
 #### Test 3: Akses dari Klien Kedua (Cirdan)
 ```bash
@@ -2022,9 +1824,6 @@ dig havens.k25.com
 # sirion.k25.com.  IN  A      10.76.3.2
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot full dig output dengan ANSWER SECTION
-
 #### Test 5: Browser Access (Optional)
 Jika menggunakan browser di klien:
 ```
@@ -2032,10 +1831,6 @@ http://havens.k25.com
 http://havens.k25.com/static
 http://havens.k25.com/app
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot browser menampilkan homepage
-- Screenshot browser navigasi ke /static dan /app
 
 ### Verifikasi Cross-Client Consistency
 
@@ -2221,17 +2016,11 @@ EOF
 - **Navigation Links**: Tautan ke `/static` dan `/app` dengan styling button
 - **Storytelling**: Menceritakan lore Tolkien sesuai tema praktikum
 
-**Screenshot yang dibutuhkan:**
-- Screenshot kode HTML homepage
-
 #### Langkah 2: Set Permissions dan Reload
 ```bash
 chown -R www-data:www-data /var/www/sirion
 nginx -t && service nginx reload
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot nginx reload berhasil
 
 ### Testing dari Semua Klien
 
@@ -2246,10 +2035,6 @@ curl http://www.k25.com | grep -i "war of wrath"
 <h1>⚔️ War of Wrath ⚔️</h1>
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot curl dari Earendil menampilkan homepage
-- Screenshot browser (jika ada) menampilkan halaman lengkap
-
 #### Test 2: Akses Homepage dari Elwing
 ```bash
 # Node Elwing (Klien Barat 2)
@@ -2258,8 +2043,6 @@ curl -I http://www.k25.com
 
 **Expected:** HTTP/1.1 200 OK
 
-**Screenshot yang dibutuhkan:**
-- Screenshot HTTP response dari Elwing
 
 #### Test 3: Akses Homepage dari Cirdan
 ```bash
@@ -2267,18 +2050,12 @@ curl -I http://www.k25.com
 curl http://www.k25.com | head -30
 ```
 
-**Screenshot yang dibutuhkan:**
-- Screenshot curl dari Cirdan
-
 #### Test 4: Akses Homepage dari Elrond
 ```bash
 # Node Elrond (Klien Timur 2)
 curl http://www.k25.com > /tmp/homepage.html
 cat /tmp/homepage.html | grep -E "(Static Archives|Dynamic Application)"
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot dari Elrond menunjukkan links terdeteksi
 
 #### Test 5: Akses Homepage dari Maglor
 ```bash
@@ -2288,8 +2065,6 @@ curl -s http://www.k25.com | grep "href"
 
 **Expected:** Menampilkan href="/static" dan href="/app"
 
-**Screenshot yang dibutuhkan:**
-- Screenshot links terekstrak
 
 ### Testing Navigation Links
 
@@ -2301,9 +2076,6 @@ curl -I http://www.k25.com/static
 
 **Expected:** HTTP/1.1 200 OK, content dari Lindon
 
-**Screenshot yang dibutuhkan:**
-- Screenshot akses /static berhasil routing ke Lindon
-
 #### Test 7: Follow Link ke /app dari Cirdan
 ```bash
 # Node Cirdan
@@ -2312,9 +2084,6 @@ curl http://www.k25.com/app | head -20
 
 **Expected:** Halaman Vingilot dynamic application
 
-**Screenshot yang dibutuhkan:**
-- Screenshot akses /app berhasil routing ke Vingilot
-
 #### Test 8: Testing dengan Alternative Hostname (havens)
 ```bash
 # Node Elrond
@@ -2322,9 +2091,6 @@ curl http://havens.k25.com | grep "War of Wrath"
 curl http://havens.k25.com/static | head -5
 curl http://havens.k25.com/app | head -5
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot akses via havens.k25.com juga berhasil
 
 ### Comprehensive Testing Matrix
 
@@ -2340,9 +2106,6 @@ curl http://havens.k25.com/app | head -5
 | Maglor    | havens.k25.com   | /        | Homepage via CNAME ✓           |
 | Maglor    | havens.k25.com   | /app     | Vingilot via CNAME ✓           |
 
-**Screenshot yang dibutuhkan:**
-- Screenshot tabel testing hasil (dapat dibuat manual atau dengan script)
-
 ### Verifikasi No IP Access
 ```bash
 # Verifikasi bahwa akses via hostname, BUKAN IP
@@ -2352,9 +2115,6 @@ curl -I http://10.76.3.2/
 # Expected: HTTP/1.1 301 Moved Permanently
 # Location: http://www.k25.com/
 ```
-
-**Screenshot yang dibutuhkan:**
-- Screenshot akses via IP redirect ke hostname kanonik
 
 ### Final Verification Script
 ```bash
